@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ID 文件传输</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 20px;
+      }
+
+      .panel {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .button {
+        width: 100%;
+        padding: 12px;
+        background: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+
+      .button:hover {
+        background: #1976d2;
+      }
+
+      .button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .button.primary {
+        background: #4caf50;
+      }
+
+      .button.primary:hover {
+        background: #45a049;
+      }
+
+      .my-id-display {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .my-id-display .id {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2196f3;
+        margin-top: 5px;
+      }
+
+      .device-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .device-item {
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .device-item:hover {
+        background: #f5f5f5;
+        border-color: #2196f3;
+      }
+
+      .device-item.selected {
+        border-color: #2196f3;
+        background: #e3f2fd;
+      }
+
+      .online-user-item {
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fafafa;
+      }
+
+      .online-user-item:hover {
+        background: #f0f0f0;
+      }
+
+      .online-user-item.self {
+        background: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .connect-btn-small {
+        padding: 5px 10px;
+        background: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .connect-btn-small:hover {
+        background: #1976d2;
+      }
+
+      .connect-btn-small:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+
+      .drop-zone.active {
+        border-color: #2196f3;
+        background: #e3f2fd;
+      }
+
+      .file-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .file-item {
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+
+      .file-progress {
+        margin-top: 8px;
+        height: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .file-progress-bar {
+        height: 100%;
+        background: #2196f3;
+        transition: width 0.3s;
+      }
+
+      .info-box {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>局域网文件传输</h1>
+      </div>
+
+      <div class="main-grid">
+        <div class="panel">
+          <h2 style="margin-bottom: 20px">连接设置</h2>
+
+          <!-- 我的 ID 设置 -->
+          <div class="input-group">
+            <label>设置我的 ID</label>
+            <input
+              type="text"
+              id="myIdInput"
+              placeholder="输入您的 ID (如: alice)"
+              maxlength="20"
+            />
+            <button id="setIdBtn" class="button primary">设置 ID</button>
+          </div>
+
+          <!-- 显示我的 ID -->
+          <div id="myIdDisplay" class="my-id-display" style="display: none">
+            <div style="color: #666">我的 ID</div>
+            <div class="id" id="myIdText"></div>
+          </div>
+
+          <!-- 手动连接功能已移除，请使用在线用户列表 -->
+
+          <!-- 在线用户列表 -->
+          <h3 style="margin-bottom: 10px; margin-top: 20px">在线用户</h3>
+          <div class="device-list" id="onlineUsersList">
+            <p style="text-align: center; color: #999">正在获取在线用户...</p>
+          </div>
+
+          <!-- 已连接的用户列表 -->
+          <h3 style="margin-bottom: 10px; margin-top: 20px">已连接的用户</h3>
+          <div class="device-list" id="deviceList">
+            <p style="text-align: center; color: #999">尚未连接任何用户</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 style="margin-bottom: 20px">文件传输</h2>
+
+          <div class="info-box">
+            <strong>使用说明：</strong>
+            <ol style="margin-top: 5px; margin-left: 20px">
+              <li>设置您的 ID（ID 只能包含字母、数字、下划线和横线）</li>
+              <li>在"在线用户"列表中点击连接按钮</li>
+              <li>连接成功后即可传输文件</li>
+            </ol>
+          </div>
+
+          <div id="dropZone" class="drop-zone">
+            <p style="font-size: 18px; margin-bottom: 10px">拖拽文件到这里</p>
+            <p style="color: #999">或点击选择文件</p>
+            <input type="file" id="fileInput" multiple style="display: none" />
+          </div>
+
+          <h3 style="margin-bottom: 10px">传输列表</h3>
+          <div class="file-list" id="fileList">
+            <p style="text-align: center; color: #999">暂无文件传输</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { P2PManagerWS } from './p2p-manager-ws.js'
+      import { config, updateConfigFromURL } from './config.js'
+
+      // 更新配置（从 URL 参数）
+      updateConfigFromURL()
+
+      const manager = new P2PManagerWS()
+      let selectedDevice = null
+      const devices = new Map()
+      const onlineUsers = new Set()
+
+      // DOM 元素
+      const myIdInput = document.getElementById('myIdInput')
+      const setIdBtn = document.getElementById('setIdBtn')
+      const myIdDisplay = document.getElementById('myIdDisplay')
+      const myIdText = document.getElementById('myIdText')
+      const deviceList = document.getElementById('deviceList')
+      const onlineUsersList = document.getElementById('onlineUsersList')
+      const dropZone = document.getElementById('dropZone')
+      const fileInput = document.getElementById('fileInput')
+      const fileList = document.getElementById('fileList')
+
+      // 初始化
+      async function init() {
+        // 使用配置文件中的信令服务器地址
+        const success = await manager.init(config.signalServer)
+
+        if (!success) {
+          const error = document.createElement('div')
+          error.style.cssText =
+            'background: #ffebee; color: #c62828; padding: 10px; margin-bottom: 10px; border-radius: 5px;'
+          error.innerHTML = `<strong>错误：</strong>无法连接到信令服务器<br>
+            请确保：<br>
+            1. 运行了 WebSocket 信令服务器：<code>node ws-signal-server.js</code><br>
+            2. 在 config.js 中配置了正确的服务器地址<br>
+            3. 或使用 URL 参数：<code>?server=[IP]:3001</code>`
+          document.querySelector('.header').appendChild(error)
+          return
+        }
+
+        if (config.signalServer) {
+          // 显示连接信息
+          // const info = document.createElement('div')
+          // info.style.cssText =
+          //   'background: #e3f2fd; padding: 10px; margin-bottom: 10px; border-radius: 5px;'
+          // info.innerHTML = `<strong>已连接到信令服务器</strong>：${config.signalServer}<br>
+          //   其他设备请访问相同的地址或配置相同的服务器`
+          // document.querySelector('.header').appendChild(info)
+          console.log('已连接到信令服务器', config.signalServer)
+        }
+
+        // 检查是否已有保存的 ID
+        const savedId = localStorage.getItem('myP2PId')
+        if (savedId) {
+          myIdInput.value = savedId
+          setMyId()
+        }
+      }
+
+      // 设置我的 ID
+      setIdBtn.onclick = setMyId
+
+      function setMyId() {
+        const myId = myIdInput.value.trim().toLowerCase()
+        if (!myId) {
+          alert('请输入一个有效的 ID')
+          return
+        }
+
+        if (!/^[a-z0-9_-]+$/i.test(myId)) {
+          alert('ID 只能包含字母、数字、下划线和横线')
+          return
+        }
+
+        // 如果是修改ID，先断开所有连接
+        const isChangingId = manager.myId && manager.myId !== myId
+        if (isChangingId) {
+          const oldId = manager.myId
+          console.log(`正在修改ID: ${oldId} -> ${myId}`)
+          
+          // 立即清理前端状态
+          devices.clear()
+          deviceList.innerHTML = '<p style="text-align: center; color: #999">尚未连接任何用户</p>'
+          selectedDevice = null
+          
+          // 从在线用户列表中移除旧ID（如果存在）
+          onlineUsers.delete(oldId)
+          
+          // 断开所有连接
+          manager.disconnectAll()
+          
+          // 先注销旧ID
+          manager.unregisterUser()
+          
+                     // 等待服务器处理注销
+           setTimeout(() => {
+             // 重新连接WebSocket以确保服务器状态清理（跳过自动注册旧ID）
+             manager.reconnectWebSocket(true).then(() => {
+               // 设置新ID
+               manager.setMyId(myId)
+               localStorage.setItem('myP2PId', myId)
+              
+              console.log(`ID已更新为: ${myId}`)
+              
+              // 更新界面显示
+              myIdText.textContent = myId
+              myIdDisplay.style.display = 'block'
+              setIdBtn.textContent = '修改 ID'
+              setIdBtn.disabled = false
+              
+              // 显示成功通知
+              const notification = document.createElement('div')
+              notification.style.cssText = 
+                'background: #4caf50; color: white; padding: 8px 12px; border-radius: 4px; ' +
+                'position: fixed; top: 20px; right: 20px; z-index: 1000; font-size: 14px;'
+              notification.textContent = `ID 已更新为 ${myId}，所有连接已断开`
+              document.body.appendChild(notification)
+              
+              setTimeout(() => {
+                if (document.body.contains(notification)) {
+                  document.body.removeChild(notification)
+                }
+              }, 3000)
+              
+              // 等待一下再获取在线用户列表
+              setTimeout(() => {
+                manager.getOnlineUsers()
+              }, 800)
+            })
+          }, 300) // 给服务器足够时间处理注销
+          
+          return // 提前返回，避免重复设置
+        }
+
+        manager.setMyId(myId)
+        localStorage.setItem('myP2PId', myId)
+
+        myIdText.textContent = myId
+        myIdDisplay.style.display = 'block'
+        setIdBtn.textContent = '修改 ID'
+        setIdBtn.disabled = false
+
+        // 设置ID后立即获取在线用户列表
+        setTimeout(() => {
+          manager.getOnlineUsers()
+        }, 500)
+      }
+
+      // 更新在线用户列表显示
+      function updateOnlineUsersList() {
+        if (onlineUsers.size === 0 && !manager.myId) {
+          onlineUsersList.innerHTML = '<p style="text-align: center; color: #999">请先设置您的 ID</p>'
+          return
+        }
+
+        if (onlineUsers.size === 0) {
+          onlineUsersList.innerHTML = '<p style="text-align: center; color: #999">暂无其他在线用户</p>'
+          return
+        }
+
+        onlineUsersList.innerHTML = ''
+        for (const userId of onlineUsers) {
+          const userDiv = document.createElement('div')
+          userDiv.className = 'online-user-item'
+          
+          const isConnected = devices.has(userId)
+          
+          userDiv.innerHTML = `
+            <span><strong>${userId}</strong>${isConnected ? ' (已连接)' : ''}</span>
+            <button class="connect-btn-small" ${isConnected ? 'disabled' : ''} 
+                    onclick="connectToUser('${userId}')">
+              ${isConnected ? '已连接' : '连接'}
+            </button>
+          `
+          onlineUsersList.appendChild(userDiv)
+        }
+      }
+
+      // 连接到指定用户
+      window.connectToUser = async (userId) => {
+        if (!manager.myId) {
+          alert('请先设置您自己的 ID')
+          return
+        }
+
+        if (userId === manager.myId) {
+          alert('不能连接到自己')
+          return
+        }
+
+        // 禁用所有连接按钮
+        const connectButtons = onlineUsersList.querySelectorAll('.connect-btn-small')
+        connectButtons.forEach(btn => btn.disabled = true)
+
+        try {
+          await manager.connectToPeer(userId)
+
+          // 添加到设备列表
+          const device = { id: userId, name: userId }
+          if (!devices.has(userId)) {
+            devices.set(userId, device)
+            addDeviceToList(device)
+          }
+
+          updateOnlineUsersList() // 更新在线用户列表状态
+        } catch (error) {
+          console.error('连接失败:', error)
+          alert(`连接到 ${userId} 失败: ${error.message}`)
+        } finally {
+          updateOnlineUsersList() // 重新启用按钮
+        }
+      }
+
+      // 添加设备到列表
+      function addDeviceToList(device) {
+        if (deviceList.children[0]?.textContent.includes('尚未连接')) {
+          deviceList.innerHTML = ''
+        }
+
+        const div = document.createElement('div')
+        div.className = 'device-item'
+        div.innerHTML = `<strong>${device.name}</strong>`
+        div.onclick = () => selectDevice(device, div)
+        deviceList.appendChild(div)
+
+        // 自动选中
+        div.click()
+      }
+
+      // 选择设备
+      function selectDevice(device, element) {
+        deviceList.querySelectorAll('.device-item').forEach((item) => {
+          item.classList.remove('selected')
+        })
+
+        element.classList.add('selected')
+        selectedDevice = device
+      }
+
+      // 文件传输相关代码...
+      dropZone.onclick = () => fileInput.click()
+
+      dropZone.ondragover = (e) => {
+        e.preventDefault()
+        dropZone.classList.add('active')
+      }
+
+      dropZone.ondragleave = () => {
+        dropZone.classList.remove('active')
+      }
+
+      dropZone.ondrop = (e) => {
+        e.preventDefault()
+        dropZone.classList.remove('active')
+        handleFiles(e.dataTransfer.files)
+      }
+
+      fileInput.onchange = (e) => {
+        handleFiles(e.target.files)
+      }
+
+      async function handleFiles(files) {
+        if (!selectedDevice) {
+          alert('请先选择一个用户')
+          return
+        }
+
+        for (const file of files) {
+          await sendFile(file)
+        }
+      }
+
+      async function sendFile(file) {
+        const fileItem = createFileItem(file)
+        fileItem.dataset.fileSize = file.size // 存储文件大小
+        if (fileList.children[0]?.textContent.includes('暂无文件')) {
+          fileList.innerHTML = ''
+        }
+        fileList.appendChild(fileItem)
+
+        try {
+          const startTime = Date.now()
+          await manager.sendFile(selectedDevice.id, file, (progressData) => {
+            updateFileProgress(fileItem, progressData.progress, progressData.completedChunks, progressData.totalChunks)
+          })
+
+          const elapsed = (Date.now() - startTime) / 1000
+          fileItem.querySelector('.file-status').textContent = `✅ 发送完成 (耗时: ${elapsed.toFixed(1)}秒)`
+          fileItem.querySelector('.file-info').style.display = 'none'
+        } catch (error) {
+          console.error('发送失败:', error)
+          const errorMsg = error.message || '未知错误'
+          const currentProgress = fileItem.querySelector('.file-progress-bar').style.width
+          fileItem.querySelector('.file-status').innerHTML = 
+            `❌ 发送失败: ${errorMsg} (已完成 ${currentProgress})`
+          fileItem.querySelector('.file-status').style.color = '#f44336'
+          fileItem.querySelector('.file-info').style.display = 'none'
+          fileItem.querySelector('.file-progress').style.display = 'none'
+        }
+      }
+
+      function createFileItem(file) {
+        const div = document.createElement('div')
+        div.className = 'file-item'
+        div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${file.name}</strong>
+            <small style="color: #666;"> (${formatSize(file.size)})</small>
+          </div>
+          <span class="file-status">发送中...</span>
+        </div>
+        <div class="file-info" style="font-size: 12px; color: #666; margin: 5px 0;">
+          <span class="transfer-speed"></span>
+          <span class="transfer-time"></span>
+        </div>
+        <div class="file-progress">
+          <div class="file-progress-bar" style="width: 0%"></div>
+        </div>
+      `
+        div.startTime = Date.now()
+        div.lastUpdate = Date.now()
+        div.lastBytes = 0
+        return div
+      }
+
+      function createReceivingFileItem(metadata, fromId) {
+        const div = document.createElement('div')
+        div.className = 'file-item'
+        div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${metadata.name}</strong>
+            <small style="color: #666;"> (${formatSize(metadata.size)})</small>
+          </div>
+          <span class="file-status">从 ${fromId} 接收中...</span>
+        </div>
+        <div class="file-info" style="font-size: 12px; color: #666; margin: 5px 0;">
+          <span class="transfer-speed"></span>
+          <span class="transfer-time"></span>
+        </div>
+        <div class="file-progress">
+          <div class="file-progress-bar" style="width: 0%"></div>
+        </div>
+      `
+        return div
+      }
+
+      function updateFileProgress(fileItem, progress, completedChunks, totalChunks) {
+        const progressBar = fileItem.querySelector('.file-progress-bar')
+        if (progressBar) {
+          progressBar.style.width = `${progress * 100}%`
+        }
+
+        // 计算传输速度和时间
+        const now = Date.now()
+        const elapsed = (now - fileItem.startTime) / 1000
+        const currentBytes = progress * parseInt(fileItem.dataset.fileSize || 0)
+        
+        if (now - fileItem.lastUpdate > 500) { // 每500ms更新一次速度
+          const bytesPerSecond = (currentBytes - fileItem.lastBytes) / ((now - fileItem.lastUpdate) / 1000)
+          const speed = formatSize(bytesPerSecond) + '/s'
+          
+          let statusText = `速度: ${speed} | 已用时: ${elapsed.toFixed(1)}秒`
+          if (completedChunks !== undefined && totalChunks !== undefined) {
+            statusText += ` | 块: ${completedChunks}/${totalChunks}`
+          }
+          
+          fileItem.querySelector('.transfer-speed').textContent = statusText
+          fileItem.querySelector('.transfer-time').textContent = ''
+          
+          fileItem.lastUpdate = now
+          fileItem.lastBytes = currentBytes
+        }
+      }
+
+      function updateReceivingFileProgress(fileInfo, progress, receivedChunks, totalChunks) {
+        const fileItem = fileInfo.item
+        const progressBar = fileItem.querySelector('.file-progress-bar')
+        if (progressBar) {
+          progressBar.style.width = `${progress * 100}%`
+        }
+
+        // 计算传输速度和时间
+        const now = Date.now()
+        const elapsed = (now - fileInfo.startTime) / 1000
+        const currentBytes = progress * fileInfo.metadata.size
+        
+        if (!fileInfo.lastUpdate || now - fileInfo.lastUpdate > 500) { // 每500ms更新一次速度
+          const bytesPerSecond = fileInfo.lastUpdate ? 
+            (currentBytes - (fileInfo.lastBytes || 0)) / ((now - fileInfo.lastUpdate) / 1000) : 0
+          const speed = formatSize(bytesPerSecond) + '/s'
+          
+          // 估计剩余时间
+          const remainingBytes = fileInfo.metadata.size - currentBytes
+          const eta = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0
+          
+          let statusText = `速度: ${speed} | 已用时: ${elapsed.toFixed(1)}秒`
+          if (eta > 0) {
+            statusText += ` | 剩余: ${eta.toFixed(1)}秒`
+          }
+          if (receivedChunks !== undefined && totalChunks !== undefined) {
+            statusText += ` | 块: ${receivedChunks}/${totalChunks}`
+          }
+          
+          fileItem.querySelector('.transfer-speed').textContent = statusText
+          fileItem.querySelector('.transfer-time').textContent = ''
+          
+          fileInfo.lastUpdate = now
+          fileInfo.lastBytes = currentBytes
+        }
+      }
+
+      function formatSize(bytes) {
+        const sizes = ['B', 'KB', 'MB', 'GB']
+        if (bytes === 0) return '0 B'
+        const i = Math.floor(Math.log(bytes) / Math.log(1024))
+        return (
+          Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i]
+        )
+      }
+
+      // 监听文件接收进度
+      const receivingFiles = new Map() // 存储接收中的文件信息
+
+      // 监听文件开始接收
+      manager.onFileStart = (metadata, fromId) => {
+        const fileItem = createReceivingFileItem(metadata, fromId)
+        
+        if (fileList.children[0]?.textContent.includes('暂无文件')) {
+          fileList.innerHTML = ''
+        }
+        fileList.appendChild(fileItem)
+
+        // 记录接收信息
+        receivingFiles.set(metadata.id, {
+          item: fileItem,
+          startTime: Date.now(),
+          metadata: metadata,
+          fromId: fromId
+        })
+      }
+
+      // 监听文件接收进度
+      manager.onFileProgress = (data) => {
+        const fileInfo = receivingFiles.get(data.id)
+        if (fileInfo) {
+          updateReceivingFileProgress(fileInfo, data.progress, data.receivedChunks, data.totalChunks)
+        }
+      }
+
+      // 监听文件接收完成
+      manager.onFileReceived = (file, fromId) => {
+        // 查找对应的接收项
+        let fileInfo = null
+        for (const [id, info] of receivingFiles) {
+          if (info.metadata.name === file.name && info.fromId === fromId) {
+            fileInfo = info
+            receivingFiles.delete(id)
+            break
+          }
+        }
+
+        if (fileInfo) {
+          // 更新为完成状态
+          const elapsed = (Date.now() - fileInfo.startTime) / 1000
+          fileInfo.item.querySelector('.file-status').innerHTML = 
+            `✅ 接收完成 (耗时: ${elapsed.toFixed(1)}秒)`
+          fileInfo.item.querySelector('.file-progress').style.display = 'none'
+        }
+      }
+
+      // 监听文件传输失败
+      manager.onFileFailed = (failedInfo, fromId) => {
+        const fileInfo = receivingFiles.get(failedInfo.id)
+        if (fileInfo) {
+          receivingFiles.delete(failedInfo.id)
+          
+          // 更新为失败状态
+          const progressPercent = (failedInfo.progress * 100).toFixed(1)
+          fileInfo.item.querySelector('.file-status').innerHTML = 
+            `❌ 传输失败: ${failedInfo.reason} (已完成 ${progressPercent}%)`
+          fileInfo.item.querySelector('.file-status').style.color = '#f44336'
+          fileInfo.item.querySelector('.file-progress').style.display = 'none'
+          fileInfo.item.querySelector('.file-info').style.display = 'none'
+        }
+      }
+
+      // 监听新连接
+      manager.onPeerConnected = (peerId) => {
+        const device = { id: peerId, name: peerId }
+        if (!devices.has(peerId)) {
+          devices.set(peerId, device)
+          addDeviceToList(device)
+        }
+        updateOnlineUsersList() // 更新在线用户列表
+      }
+
+      // 监听在线用户列表
+      manager.onUsersListReceived = (users) => {
+        console.log('收到在线用户列表:', users)
+        onlineUsers.clear()
+        users.forEach(userId => onlineUsers.add(userId))
+        console.log('更新后的在线用户:', Array.from(onlineUsers))
+        updateOnlineUsersList()
+      }
+
+      // 监听新用户上线
+      manager.onUserOnline = (userId) => {
+        if (userId !== manager.myId) {
+          onlineUsers.add(userId)
+          updateOnlineUsersList()
+        }
+      }
+
+      // 监听用户离线
+      manager.onUserOffline = (userId) => {
+        console.log(`用户 ${userId} 已离线，从在线列表中移除`)
+        onlineUsers.delete(userId)
+        
+        // 如果该用户已连接，从设备列表中移除
+        if (devices.has(userId)) {
+          console.log(`用户 ${userId} 已连接，从设备列表中移除`)
+          devices.delete(userId)
+          // 更新已连接设备列表
+          updateDeviceList()
+        }
+        
+        updateOnlineUsersList()
+        console.log('当前在线用户:', Array.from(onlineUsers))
+      }
+
+      // 更新已连接设备列表
+      function updateDeviceList() {
+        if (devices.size === 0) {
+          deviceList.innerHTML = '<p style="text-align: center; color: #999">尚未连接任何用户</p>'
+          selectedDevice = null
+        } else {
+          deviceList.innerHTML = ''
+          let firstDevice = null
+          for (const [id, device] of devices) {
+            const div = document.createElement('div')
+            div.className = 'device-item'
+            div.innerHTML = `<strong>${device.name}</strong>`
+            div.onclick = () => selectDevice(device, div)
+            deviceList.appendChild(div)
+            
+            if (!firstDevice) {
+              firstDevice = { device, element: div }
+            }
+          }
+          
+          // 如果当前选中的设备已离线，选择第一个设备
+          if (selectedDevice && !devices.has(selectedDevice.id) && firstDevice) {
+            firstDevice.element.click()
+          }
+        }
+      }
+
+      // 定期刷新在线用户列表
+      setInterval(() => {
+        if (manager.myId) {
+          manager.getOnlineUsers()
+        }
+      }, 5000)
+
+      // 页面卸载时清理
+      window.addEventListener('beforeunload', () => {
+        manager.cleanup()
+      })
+
+      // 启动
+      init()
+    </script>
+  </body>
+</html>

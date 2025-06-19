@@ -1,0 +1,30 @@
+{
+  "name": "file-share",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "P2P 文件传输应用 - 支持局域网内直接传输文件",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run web\" \"npm run signal\"",
+    "web": "node web-server.js",
+    "signal": "node ws-signal-server.js",
+    "dev": "concurrently --names \"WEB,WS\" --prefix-colors \"cyan,yellow\" \"npm run web\" \"npm run signal\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "p2p",
+    "file-transfer",
+    "webrtc",
+    "websocket",
+    "file-sharing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
