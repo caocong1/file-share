@@ -3,8 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ID 文件传输</title>
+    <meta name="description" content="安全、快速、简单的局域网文件传输工具" />
+    <title>🚀 ID 文件传输</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>"/>
     <style>
+      :root {
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary: #f8fafc;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-light: #9ca3af;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --surface: #ffffff;
+        --surface-elevated: #ffffff;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 8px;
+        --radius-lg: 12px;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -12,279 +36,761 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-          sans-serif;
-        background: #f5f5f5;
-        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        line-height: 1.6;
+        color: var(--text-primary);
+        padding: 1rem;
       }
 
       .container {
         max-width: 1200px;
         margin: 0 auto;
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       .header {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .header h1 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
       .main-grid {
         display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 20px;
+        grid-template-columns: 1fr 2fr;
+        gap: 1.5rem;
+        align-items: start;
       }
 
       .panel {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .panel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      }
+
+      .panel h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .panel h2::before {
+        content: '';
+        width: 4px;
+        height: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 2px;
+      }
+
+      .panel h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 1.5rem 0 0.75rem 0;
+        color: var(--text-primary);
       }
 
       .input-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
       }
 
       .input-group label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.5rem;
         font-weight: 500;
-        color: #333;
+        color: var(--text-primary);
+        font-size: 0.9rem;
       }
 
       .input-group input {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 16px;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background: var(--surface);
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
 
       .button {
         width: 100%;
-        padding: 12px;
-        background: #2196f3;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: var(--radius);
         cursor: pointer;
-        font-size: 16px;
-        margin-top: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .button:hover::before {
+        left: 100%;
       }
 
       .button:hover {
-        background: #1976d2;
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .button:active {
+        transform: translateY(0);
       }
 
       .button:disabled {
-        background: #ccc;
+        background: var(--text-light);
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
       .button.primary {
-        background: #4caf50;
+        background: var(--accent);
       }
 
       .button.primary:hover {
-        background: #45a049;
+        background: var(--accent-hover);
       }
 
-      .my-id-display {
-        background: #e3f2fd;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        text-align: center;
+      .id-section {
+        margin-bottom: 1.5rem;
       }
 
-      .my-id-display .id {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2196f3;
-        margin-top: 5px;
+      .id-card {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem;
+        transition: all 0.3s ease;
       }
 
-      .device-list {
+      .id-card.active-id {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.05));
+        border-color: var(--accent);
+      }
+
+      .id-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .id-icon {
+        font-size: 1rem;
+      }
+
+      .id-input-wrapper, .id-display-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .id-input {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) / 1.5);
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        background: var(--surface);
+      }
+
+      .id-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
+
+      .current-id {
+        flex: 1;
+        font-size: 1.1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .id-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: calc(var(--radius) / 1.5);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        min-width: 60px;
+        background: var(--primary);
+        color: white;
+      }
+
+      .id-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      .id-btn.secondary {
+        background: var(--text-light);
+        color: var(--text-primary);
+      }
+
+      .id-btn.secondary:hover {
+        background: var(--text-secondary);
+        color: white;
+      }
+
+      .list-container {
         max-height: 300px;
         overflow-y: auto;
+        overflow-x: hidden;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-light);
       }
 
-      .device-item {
-        padding: 12px;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        margin-bottom: 10px;
+      .list-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .list-container::-webkit-scrollbar-track {
+        background: var(--border-light);
+        border-radius: 3px;
+      }
+
+      .list-container::-webkit-scrollbar-thumb {
+        background: var(--text-light);
+        border-radius: 3px;
+      }
+
+      .list-container::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+      }
+
+      .device-item, .online-user-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
         cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .device-item:hover {
-        background: #f5f5f5;
-        border-color: #2196f3;
-      }
-
-      .device-item.selected {
-        border-color: #2196f3;
-        background: #e3f2fd;
-      }
-
-      .online-user-item {
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        margin-bottom: 8px;
+        transition: all 0.2s ease;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #fafafa;
       }
 
-      .online-user-item:hover {
-        background: #f0f0f0;
+      .device-item:last-child, .online-user-item:last-child {
+        border-bottom: none;
+      }
+
+      .device-item:hover, .online-user-item:hover {
+        background: var(--secondary);
+        transform: translateX(4px);
+      }
+
+      .device-item.selected {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+        border-left: 4px solid var(--primary);
       }
 
       .online-user-item.self {
-        background: #e8f5e9;
-        border-color: #4caf50;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1));
+        border-left: 4px solid var(--accent);
       }
 
       .connect-btn-small {
-        padding: 5px 10px;
-        background: #2196f3;
+        padding: 0.5rem 1rem;
+        background: var(--primary);
         color: white;
         border: none;
-        border-radius: 3px;
+        border-radius: calc(var(--radius) / 2);
         cursor: pointer;
-        font-size: 14px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        min-width: 70px;
       }
 
       .connect-btn-small:hover {
-        background: #1976d2;
+        background: var(--primary-hover);
+        transform: scale(1.05);
       }
 
       .connect-btn-small:disabled {
-        background: #ccc;
+        background: var(--text-light);
         cursor: not-allowed;
+        transform: none;
       }
 
       .drop-zone {
-        border: 2px dashed #ccc;
-        border-radius: 10px;
-        padding: 40px;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        padding: 3rem 2rem;
         text-align: center;
-        margin-bottom: 20px;
-        transition: all 0.3s;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.8));
+        cursor: pointer;
       }
 
-      .drop-zone.active {
-        border-color: #2196f3;
-        background: #e3f2fd;
+      .drop-zone:hover, .drop-zone.active {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
+        transform: scale(1.02);
+      }
+
+      .drop-zone-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+      }
+
+      .drop-zone p {
+        margin: 0.5rem 0;
+      }
+
+      .drop-zone .primary-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .drop-zone .secondary-text {
+        color: var(--text-secondary);
       }
 
       .file-list {
-        max-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
+        border-radius: var(--radius);
       }
 
       .file-item {
-        background: #f5f5f5;
-        padding: 12px;
-        border-radius: 5px;
-        margin-bottom: 10px;
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-light);
+        transition: all 0.2s ease;
+      }
+
+      .file-item:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      .file-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        flex-direction: column;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        word-break: break-word;
+      }
+
+      .file-size {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+      }
+
+      .file-status {
+        font-size: 0.9rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .file-info {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin: 0.75rem 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
       }
 
       .file-progress {
-        margin-top: 8px;
-        height: 4px;
-        background: #e0e0e0;
-        border-radius: 2px;
+        height: 6px;
+        background: var(--border-light);
+        border-radius: 3px;
         overflow: hidden;
+        margin-top: 0.75rem;
       }
 
       .file-progress-bar {
         height: 100%;
-        background: #2196f3;
-        transition: width 0.3s;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transition: width 0.3s ease;
+        border-radius: 3px;
       }
 
       .info-box {
-        background: #fff3cd;
-        border: 1px solid #ffeeba;
-        color: #856404;
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 14px;
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: var(--text-primary);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      .info-box strong {
+        color: var(--warning);
+      }
+
+      .info-box ol {
+        margin-top: 0.75rem;
+        margin-left: 1.5rem;
+      }
+
+      .info-box li {
+        margin: 0.25rem 0;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--text-light);
+        padding: 2rem;
+        font-style: italic;
+      }
+
+      .notification {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius);
+        color: white;
+        font-weight: 500;
+        box-shadow: var(--shadow-lg);
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      .notification.success {
+        background: var(--accent);
+      }
+
+      .notification.error {
+        background: var(--danger);
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-indicator.online {
+        background: var(--accent);
+      }
+
+      .status-indicator.offline {
+        background: var(--text-light);
+      }
+
+      /* 触摸设备优化 */
+      @media (hover: none) and (pointer: coarse) {
+        .button, .connect-btn-small {
+          min-height: 44px; /* iOS 推荐的最小触摸目标 */
+        }
+        
+        .device-item, .online-user-item {
+          min-height: 44px;
+        }
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        body {
+          padding: 0.5rem;
+        }
+
+        .main-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .header {
+          padding: 1.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .panel {
+          padding: 1rem;
+        }
+
+        .id-card {
+          padding: 0.75rem;
+        }
+
+        .id-input-wrapper, .id-display-wrapper {
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: stretch;
+        }
+
+        .id-btn {
+          align-self: stretch;
+        }
+
+        .drop-zone {
+          padding: 2rem 1rem;
+        }
+
+        .drop-zone-icon {
+          font-size: 2rem;
+        }
+
+        .file-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .file-info {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        .device-item, .online-user-item {
+          padding: 0.75rem;
+        }
+
+        .notification {
+          top: 0.5rem;
+          right: 0.5rem;
+          left: 0.5rem;
+          margin: 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .panel h2 {
+          font-size: 1.25rem;
+        }
+
+        .button {
+          padding: 0.875rem 1.5rem;
+        }
+
+        .drop-zone {
+          padding: 1.5rem 1rem;
+        }
+
+        .file-item {
+          padding: 1rem;
+        }
+      }
+
+      /* 深色模式支持 */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surface: #1f2937;
+          --surface-elevated: #374151;
+          --text-primary: #f9fafb;
+          --text-secondary: #d1d5db;
+          --text-light: #9ca3af;
+          --border: #374151;
+          --border-light: #4b5563;
+          --secondary: #374151;
+        }
+
+        body {
+          background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+
+        .panel, .header {
+          background: rgba(31, 41, 55, 0.8);
+          border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .file-item {
+          background: var(--surface-elevated);
+        }
+
+        .drop-zone {
+          background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(55, 65, 81, 0.8));
+        }
+
+        .id-card {
+          background: rgba(55, 65, 81, 0.5);
+          border-color: var(--border);
+        }
+
+        .id-card.active-id {
+          background: rgba(16, 185, 129, 0.15);
+          border-color: var(--accent);
+        }
+
+        .id-input {
+          background: var(--surface-elevated);
+          border-color: var(--border);
+          color: var(--text-primary);
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1>局域网文件传输</h1>
+        <h1>🚀 局域网文件传输</h1>
+        <p>安全、快速、简单的点对点文件传输工具</p>
       </div>
 
       <div class="main-grid">
         <div class="panel">
-          <h2 style="margin-bottom: 20px">连接设置</h2>
-
-          <!-- 我的 ID 设置 -->
-          <div class="input-group">
-            <label>设置我的 ID</label>
-            <input
-              type="text"
-              id="myIdInput"
-              placeholder="输入您的 ID (如: alice)"
-              maxlength="20"
-            />
-            <button id="setIdBtn" class="button primary">设置 ID</button>
-          </div>
-
-          <!-- 显示我的 ID -->
-          <div id="myIdDisplay" class="my-id-display" style="display: none">
-            <div style="color: #666">我的 ID</div>
-            <div class="id" id="myIdText"></div>
-          </div>
-
-          <!-- 手动连接功能已移除，请使用在线用户列表 -->
-
-          <!-- 在线用户列表 -->
-          <h3 style="margin-bottom: 10px; margin-top: 20px">在线用户</h3>
-          <div class="device-list" id="onlineUsersList">
-            <p style="text-align: center; color: #999">正在获取在线用户...</p>
-          </div>
-
-          <!-- 已连接的用户列表 -->
-          <h3 style="margin-bottom: 10px; margin-top: 20px">已连接的用户</h3>
-          <div class="device-list" id="deviceList">
-            <p style="text-align: center; color: #999">尚未连接任何用户</p>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h2 style="margin-bottom: 20px">文件传输</h2>
+          <h2>🔗 连接设置</h2>
 
           <div class="info-box">
-            <strong>使用说明：</strong>
-            <ol style="margin-top: 5px; margin-left: 20px">
+            <strong>💡 使用说明：</strong>
+            <ol>
               <li>设置您的 ID（ID 只能包含字母、数字、下划线和横线）</li>
               <li>在"在线用户"列表中点击连接按钮</li>
               <li>连接成功后即可传输文件</li>
             </ol>
           </div>
 
+          <!-- ID 管理区域 -->
+          <div class="id-section">
+            <div id="idSetupCard" class="id-card">
+              <!-- <div class="id-card-header">
+                <span class="id-icon">👤</span>
+                <span>设置您的身份ID</span>
+              </div> -->
+              <div class="id-input-wrapper">
+                <input
+                  type="text"
+                  id="myIdInput"
+                  placeholder="输入您的 ID (如: alice)"
+                  maxlength="20"
+                  class="id-input"
+                />
+                <button id="setIdBtn" class="id-btn">设置</button>
+              </div>
+            </div>
+
+            <div id="idDisplayCard" class="id-card active-id" style="display: none">
+              <!-- <div class="id-card-header">
+                <span class="id-icon">✅</span>
+                <span>当前身份</span>
+              </div> -->
+              <div class="id-display-wrapper">
+                <div class="current-id" id="myIdText"></div>
+                <button id="changeIdBtn" class="id-btn secondary">修改</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 在线用户列表 -->
+          <h3>👥 在线用户</h3>
+          <div class="list-container">
+            <div id="onlineUsersList">
+              <div class="empty-state">正在获取在线用户...</div>
+            </div>
+          </div>
+
+          <!-- 已连接的用户列表 -->
+          <h3>✅ 已连接的用户</h3>
+          <div class="list-container">
+            <div id="deviceList">
+              <div class="empty-state">尚未连接任何用户</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>📁 文件传输</h2>
+
           <div id="dropZone" class="drop-zone">
-            <p style="font-size: 18px; margin-bottom: 10px">拖拽文件到这里</p>
-            <p style="color: #999">或点击选择文件</p>
+            <div class="drop-zone-icon">📤</div>
+            <p class="primary-text">拖拽文件到这里</p>
+            <p class="secondary-text">或点击选择文件</p>
             <input type="file" id="fileInput" multiple style="display: none" />
           </div>
 
-          <h3 style="margin-bottom: 10px">传输列表</h3>
+          <h3>📋 传输列表</h3>
           <div class="file-list" id="fileList">
-            <p style="text-align: center; color: #999">暂无文件传输</p>
+            <div class="empty-state">暂无文件传输</div>
           </div>
         </div>
       </div>
@@ -305,7 +811,9 @@
       // DOM 元素
       const myIdInput = document.getElementById('myIdInput')
       const setIdBtn = document.getElementById('setIdBtn')
-      const myIdDisplay = document.getElementById('myIdDisplay')
+      const changeIdBtn = document.getElementById('changeIdBtn')
+      const idSetupCard = document.getElementById('idSetupCard')
+      const idDisplayCard = document.getElementById('idDisplayCard')
       const myIdText = document.getElementById('myIdText')
       const deviceList = document.getElementById('deviceList')
       const onlineUsersList = document.getElementById('onlineUsersList')
@@ -320,9 +828,12 @@
 
         if (!success) {
           const error = document.createElement('div')
-          error.style.cssText =
-            'background: #ffebee; color: #c62828; padding: 10px; margin-bottom: 10px; border-radius: 5px;'
-          error.innerHTML = `<strong>错误：</strong>无法连接到信令服务器<br>
+          error.className = 'notification error'
+          error.style.position = 'relative'
+          error.style.top = 'auto'
+          error.style.right = 'auto'
+          error.style.marginBottom = '1rem'
+          error.innerHTML = `<strong>❌ 错误：</strong>无法连接到信令服务器<br>
             请确保：<br>
             1. 运行了 WebSocket 信令服务器：<code>node ws-signal-server.js</code><br>
             2. 在 config.js 中配置了正确的服务器地址<br>
@@ -352,6 +863,18 @@
 
       // 设置我的 ID
       setIdBtn.onclick = setMyId
+      changeIdBtn.onclick = () => {
+        idDisplayCard.style.display = 'none'
+        idSetupCard.style.display = 'block'
+        myIdInput.focus()
+      }
+
+      // 回车键设置ID
+      myIdInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          setMyId()
+        }
+      })
 
       function setMyId() {
         const myId = myIdInput.value.trim().toLowerCase()
@@ -365,15 +888,21 @@
           return
         }
 
-        // 如果是修改ID，先断开所有连接
-        const isChangingId = manager.myId && manager.myId !== myId
-        if (isChangingId) {
+        // 设置加载状态
+        setIdBtn.disabled = true
+        const originalText = setIdBtn.textContent
+        setIdBtn.textContent = '设置中...'
+
+        try {
+          // 如果是修改ID，先断开所有连接
+          const isChangingId = manager.myId && manager.myId !== myId
+          if (isChangingId) {
           const oldId = manager.myId
           console.log(`正在修改ID: ${oldId} -> ${myId}`)
           
           // 立即清理前端状态
           devices.clear()
-          deviceList.innerHTML = '<p style="text-align: center; color: #999">尚未连接任何用户</p>'
+          deviceList.innerHTML = '<div class="empty-state">尚未连接任何用户</div>'
           selectedDevice = null
           
           // 从在线用户列表中移除旧ID（如果存在）
@@ -397,16 +926,13 @@
               
               // 更新界面显示
               myIdText.textContent = myId
-              myIdDisplay.style.display = 'block'
-              setIdBtn.textContent = '修改 ID'
-              setIdBtn.disabled = false
+              idSetupCard.style.display = 'none'
+              idDisplayCard.style.display = 'block'
               
               // 显示成功通知
               const notification = document.createElement('div')
-              notification.style.cssText = 
-                'background: #4caf50; color: white; padding: 8px 12px; border-radius: 4px; ' +
-                'position: fixed; top: 20px; right: 20px; z-index: 1000; font-size: 14px;'
-              notification.textContent = `ID 已更新为 ${myId}，所有连接已断开`
+              notification.className = 'notification success'
+              notification.innerHTML = `✅ ID 已更新为 ${myId}，所有连接已断开`
               document.body.appendChild(notification)
               
               setTimeout(() => {
@@ -428,26 +954,33 @@
         manager.setMyId(myId)
         localStorage.setItem('myP2PId', myId)
 
-        myIdText.textContent = myId
-        myIdDisplay.style.display = 'block'
-        setIdBtn.textContent = '修改 ID'
-        setIdBtn.disabled = false
+                  myIdText.textContent = myId
+          idSetupCard.style.display = 'none'
+          idDisplayCard.style.display = 'block'
 
-        // 设置ID后立即获取在线用户列表
-        setTimeout(() => {
-          manager.getOnlineUsers()
-        }, 500)
+          // 设置ID后立即获取在线用户列表
+          setTimeout(() => {
+            manager.getOnlineUsers()
+          }, 500)
+        } catch (error) {
+          console.error('设置ID失败:', error)
+          alert('设置ID失败: ' + error.message)
+        } finally {
+          // 恢复按钮状态
+          setIdBtn.disabled = false
+          setIdBtn.textContent = originalText
+        }
       }
 
       // 更新在线用户列表显示
       function updateOnlineUsersList() {
         if (onlineUsers.size === 0 && !manager.myId) {
-          onlineUsersList.innerHTML = '<p style="text-align: center; color: #999">请先设置您的 ID</p>'
+          onlineUsersList.innerHTML = '<div class="empty-state">请先设置您的 ID</div>'
           return
         }
 
         if (onlineUsers.size === 0) {
-          onlineUsersList.innerHTML = '<p style="text-align: center; color: #999">暂无其他在线用户</p>'
+          onlineUsersList.innerHTML = '<div class="empty-state">暂无其他在线用户</div>'
           return
         }
 
@@ -459,7 +992,10 @@
           const isConnected = devices.has(userId)
           
           userDiv.innerHTML = `
-            <span><strong>${userId}</strong>${isConnected ? ' (已连接)' : ''}</span>
+            <span>
+              <span class="status-indicator ${isConnected ? 'online' : 'offline'}"></span>
+              <strong>${userId}</strong>${isConnected ? ' (已连接)' : ''}
+            </span>
             <button class="connect-btn-small" ${isConnected ? 'disabled' : ''} 
                     onclick="connectToUser('${userId}')">
               ${isConnected ? '已连接' : '连接'}
@@ -506,13 +1042,18 @@
 
       // 添加设备到列表
       function addDeviceToList(device) {
-        if (deviceList.children[0]?.textContent.includes('尚未连接')) {
+        if (deviceList.children[0]?.classList.contains('empty-state')) {
           deviceList.innerHTML = ''
         }
 
         const div = document.createElement('div')
         div.className = 'device-item'
-        div.innerHTML = `<strong>${device.name}</strong>`
+        div.innerHTML = `
+          <span>
+            <span class="status-indicator online"></span>
+            <strong>${device.name}</strong>
+          </span>
+        `
         div.onclick = () => selectDevice(device, div)
         deviceList.appendChild(div)
 
@@ -566,7 +1107,7 @@
       async function sendFile(file) {
         const fileItem = createFileItem(file)
         fileItem.dataset.fileSize = file.size // 存储文件大小
-        if (fileList.children[0]?.textContent.includes('暂无文件')) {
+        if (fileList.children[0]?.classList.contains('empty-state')) {
           fileList.innerHTML = ''
         }
         fileList.appendChild(fileItem)
@@ -586,7 +1127,7 @@
           const currentProgress = fileItem.querySelector('.file-progress-bar').style.width
           fileItem.querySelector('.file-status').innerHTML = 
             `❌ 发送失败: ${errorMsg} (已完成 ${currentProgress})`
-          fileItem.querySelector('.file-status').style.color = '#f44336'
+          fileItem.querySelector('.file-status').style.color = 'var(--danger)'
           fileItem.querySelector('.file-info').style.display = 'none'
           fileItem.querySelector('.file-progress').style.display = 'none'
         }
@@ -596,21 +1137,21 @@
         const div = document.createElement('div')
         div.className = 'file-item'
         div.innerHTML = `
-        <div style="display: flex; justify-content: space-between;">
-          <div>
-            <strong>${file.name}</strong>
-            <small style="color: #666;"> (${formatSize(file.size)})</small>
+          <div class="file-header">
+            <div>
+              <div class="file-name">📄 ${file.name}</div>
+              <span class="file-size">(${formatSize(file.size)})</span>
+            </div>
+            <span class="file-status">⏳ 发送中...</span>
           </div>
-          <span class="file-status">发送中...</span>
-        </div>
-        <div class="file-info" style="font-size: 12px; color: #666; margin: 5px 0;">
-          <span class="transfer-speed"></span>
-          <span class="transfer-time"></span>
-        </div>
-        <div class="file-progress">
-          <div class="file-progress-bar" style="width: 0%"></div>
-        </div>
-      `
+          <div class="file-info">
+            <span class="transfer-speed"></span>
+            <span class="transfer-time"></span>
+          </div>
+          <div class="file-progress">
+            <div class="file-progress-bar" style="width: 0%"></div>
+          </div>
+        `
         div.startTime = Date.now()
         div.lastUpdate = Date.now()
         div.lastBytes = 0
@@ -621,21 +1162,21 @@
         const div = document.createElement('div')
         div.className = 'file-item'
         div.innerHTML = `
-        <div style="display: flex; justify-content: space-between;">
-          <div>
-            <strong>${metadata.name}</strong>
-            <small style="color: #666;"> (${formatSize(metadata.size)})</small>
+          <div class="file-header">
+            <div>
+              <div class="file-name">📥 ${metadata.name}</div>
+              <span class="file-size">(${formatSize(metadata.size)})</span>
+            </div>
+            <span class="file-status">⬇️ 从 ${fromId} 接收中...</span>
           </div>
-          <span class="file-status">从 ${fromId} 接收中...</span>
-        </div>
-        <div class="file-info" style="font-size: 12px; color: #666; margin: 5px 0;">
-          <span class="transfer-speed"></span>
-          <span class="transfer-time"></span>
-        </div>
-        <div class="file-progress">
-          <div class="file-progress-bar" style="width: 0%"></div>
-        </div>
-      `
+          <div class="file-info">
+            <span class="transfer-speed"></span>
+            <span class="transfer-time"></span>
+          </div>
+          <div class="file-progress">
+            <div class="file-progress-bar" style="width: 0%"></div>
+          </div>
+        `
         return div
       }
 
@@ -655,9 +1196,9 @@
           const speed = formatSize(bytesPerSecond) + '/s'
           
           let statusText = `速度: ${speed} | 已用时: ${elapsed.toFixed(1)}秒`
-          if (completedChunks !== undefined && totalChunks !== undefined) {
-            statusText += ` | 块: ${completedChunks}/${totalChunks}`
-          }
+          // if (completedChunks !== undefined && totalChunks !== undefined) {
+          //   statusText += ` | 块: ${completedChunks}/${totalChunks}`
+          // }
           
           fileItem.querySelector('.transfer-speed').textContent = statusText
           fileItem.querySelector('.transfer-time').textContent = ''
@@ -692,9 +1233,9 @@
           if (eta > 0) {
             statusText += ` | 剩余: ${eta.toFixed(1)}秒`
           }
-          if (receivedChunks !== undefined && totalChunks !== undefined) {
-            statusText += ` | 块: ${receivedChunks}/${totalChunks}`
-          }
+          // if (receivedChunks !== undefined && totalChunks !== undefined) {
+          //   statusText += ` | 块: ${receivedChunks}/${totalChunks}`
+          // }
           
           fileItem.querySelector('.transfer-speed').textContent = statusText
           fileItem.querySelector('.transfer-time').textContent = ''
@@ -720,7 +1261,7 @@
       manager.onFileStart = (metadata, fromId) => {
         const fileItem = createReceivingFileItem(metadata, fromId)
         
-        if (fileList.children[0]?.textContent.includes('暂无文件')) {
+        if (fileList.children[0]?.classList.contains('empty-state')) {
           fileList.innerHTML = ''
         }
         fileList.appendChild(fileItem)
@@ -773,7 +1314,7 @@
           const progressPercent = (failedInfo.progress * 100).toFixed(1)
           fileInfo.item.querySelector('.file-status').innerHTML = 
             `❌ 传输失败: ${failedInfo.reason} (已完成 ${progressPercent}%)`
-          fileInfo.item.querySelector('.file-status').style.color = '#f44336'
+          fileInfo.item.querySelector('.file-status').style.color = 'var(--danger)'
           fileInfo.item.querySelector('.file-progress').style.display = 'none'
           fileInfo.item.querySelector('.file-info').style.display = 'none'
         }
@@ -826,7 +1367,7 @@
       // 更新已连接设备列表
       function updateDeviceList() {
         if (devices.size === 0) {
-          deviceList.innerHTML = '<p style="text-align: center; color: #999">尚未连接任何用户</p>'
+          deviceList.innerHTML = '<div class="empty-state">尚未连接任何用户</div>'
           selectedDevice = null
         } else {
           deviceList.innerHTML = ''
@@ -834,7 +1375,12 @@
           for (const [id, device] of devices) {
             const div = document.createElement('div')
             div.className = 'device-item'
-            div.innerHTML = `<strong>${device.name}</strong>`
+            div.innerHTML = `
+              <span>
+                <span class="status-indicator online"></span>
+                <strong>${device.name}</strong>
+              </span>
+            `
             div.onclick = () => selectDevice(device, div)
             deviceList.appendChild(div)
             
