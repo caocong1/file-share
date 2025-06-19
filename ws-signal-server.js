@@ -236,6 +236,13 @@ function handleRegister(ws, message) {
     id: userId
   }))
   
+  // 自动推送当前在线用户列表给新用户
+  const currentUsers = getOnlineUsersList().filter(id => id !== userId)
+  ws.send(JSON.stringify({
+    type: 'users-list',
+    users: currentUsers
+  }))
+  
   // 通知其他用户新用户上线
   broadcastToAll({
     type: 'user-online',
