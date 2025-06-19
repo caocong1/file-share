@@ -3,10 +3,10 @@ export const config = {
   // 信令服务器地址
   // 如果为 null，则使用 BroadcastChannel（仅同设备）
   // 如果设置了地址，则使用 WebSocket 信令服务器（支持跨设备）
-  signalServer: 'http://localhost:3001', // 默认使用本地信令服务器，可通过 URL 参数覆盖
+  signalServer: 'http://10.10.99.233:3001', // 默认使用本地信令服务器，可通过 URL 参数覆盖
 
   // STUN 服务器配置
-  stunServer: 'stun:stun.l.google.com:19302', // 使用 Google 的公共 STUN 服务器
+  stunServer: 'stun:10.10.99.234:3478', // 使用 Google 的公共 STUN 服务器
 
   // 其他配置选项
   options: {
