@@ -876,7 +876,7 @@
         }
       })
 
-      function setMyId() {
+      async function setMyId() {
         const myId = myIdInput.value.trim().toLowerCase()
         if (!myId) {
           alert('请输入一个有效的 ID')
@@ -911,44 +911,47 @@
           // 断开所有连接
           manager.disconnectAll()
           
-          // 先注销旧ID
-          manager.unregisterUser()
+          // 先注销旧ID并等待确认
+          try {
+            await manager.unregisterUser()
+            console.log('旧ID注销成功')
+          } catch (error) {
+            console.warn('注销旧ID失败，继续执行:', error.message)
+          }
           
-                     // 等待服务器处理注销
-           setTimeout(() => {
-             // 重新连接WebSocket以确保服务器状态清理（跳过自动注册旧ID）
-             manager.reconnectWebSocket(true).then(async () => {
-               // 设置新ID
-               manager.setMyId(myId)
-               localStorage.setItem('myP2PId', myId)
-              
-              console.log(`ID已更新为: ${myId}`)
-              
-              // 更新界面显示
-              myIdText.textContent = myId
-              idSetupCard.style.display = 'none'
-              idDisplayCard.style.display = 'block'
-              
-              // 显示成功通知
-              const notification = document.createElement('div')
-              notification.className = 'notification success'
-              notification.innerHTML = `✅ ID 已更新为 ${myId}，所有连接已断开`
-              document.body.appendChild(notification)
-              
-              setTimeout(() => {
-                if (document.body.contains(notification)) {
-                  document.body.removeChild(notification)
-                }
-              }, 3000)
-              
-              // 等待获取在线用户列表完成
-              try {
-                await manager.getOnlineUsers()
-              } catch (error) {
-                console.error('获取在线用户列表失败:', error)
-              }
-            })
-          }, 300) // 给服务器足够时间处理注销
+          // 注销完成后立即进行后续操作
+          // 重新连接WebSocket以确保服务器状态清理（跳过自动注册旧ID）
+          await manager.reconnectWebSocket(true)
+          
+          // 设置新ID
+          manager.setMyId(myId)
+          localStorage.setItem('myP2PId', myId)
+          
+          console.log(`ID已更新为: ${myId}`)
+          
+          // 更新界面显示
+          myIdText.textContent = myId
+          idSetupCard.style.display = 'none'
+          idDisplayCard.style.display = 'block'
+          
+          // 显示成功通知
+          const notification = document.createElement('div')
+          notification.className = 'notification success'
+          notification.innerHTML = `✅ ID 已更新为 ${myId}，所有连接已断开`
+          document.body.appendChild(notification)
+          
+          setTimeout(() => {
+            if (document.body.contains(notification)) {
+              document.body.removeChild(notification)
+            }
+          }, 3000)
+          
+          // 等待获取在线用户列表完成
+          try {
+            await manager.getOnlineUsers()
+          } catch (error) {
+            console.error('获取在线用户列表失败:', error)
+          }
           
           return // 提前返回，避免重复设置
         }

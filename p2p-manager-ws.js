@@ -170,15 +170,37 @@ class P2PManagerWS {
     })
   }
 
-  // 注销用户
+  // 注销用户 - 返回Promise
   unregisterUser() {
-    if (this.myId) {
+    if (!this.myId) {
+      return Promise.resolve() // 如果没有ID，直接成功
+    }
+    
+    return new Promise((resolve, reject) => {
+      const requestId = this.generateRequestId()
+      
+      // 设置超时
+      const timeout = setTimeout(() => {
+        this.pendingRequests.delete(requestId)
+        reject(new Error('注销用户超时'))
+      }, 10000) // 10秒超时
+      
+      // 保存请求信息
+      this.pendingRequests.set(requestId, {
+        resolve,
+        reject,
+        timeout
+      })
+      
       console.log('注销用户:', this.myId)
+      
+      // 发送请求
       this.sendSignalMessage({
         type: 'unregister',
         id: this.myId,
+        requestId: requestId
       })
-    }
+    })
   }
 
   // 生成唯一请求ID
@@ -317,8 +339,28 @@ class P2PManagerWS {
         console.log('注册成功:', message.id)
         break
 
+      case 'unregistered':
+        console.log('注销成功:', message.id)
+        
+        // 如果有requestId，说明这是对unregisterUser请求的响应
+        if (message.requestId && this.pendingRequests.has(message.requestId)) {
+          const request = this.pendingRequests.get(message.requestId)
+          this.pendingRequests.delete(message.requestId)
+          clearTimeout(request.timeout)
+          request.resolve(message.id)
+        }
+        break
+
       case 'error':
         console.error('服务器错误:', message.message)
+        
+        // 检查是否是对某个请求的错误响应
+        if (message.requestId && this.pendingRequests.has(message.requestId)) {
+          const request = this.pendingRequests.get(message.requestId)
+          this.pendingRequests.delete(message.requestId)
+          clearTimeout(request.timeout)
+          request.reject(new Error(message.message))
+        }
         break
 
       case 'user-offline':
@@ -533,8 +575,10 @@ class P2PManagerWS {
 
   // 清理
   cleanup() {
-    // 注销用户
-    this.unregisterUser()
+    // 尝试注销用户（不等待结果，因为可能正在清理中）
+    this.unregisterUser().catch((error) => {
+      console.warn('清理时注销用户失败:', error.message)
+    })
     
     // 清理所有待响应的请求
     for (const [requestId, request] of this.pendingRequests) {

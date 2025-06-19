@@ -250,10 +250,29 @@ function handleUnregister(ws, message) {
   if (userId) {
     cleanupUser(userId)
     
-    ws.send(JSON.stringify({
+    const response = {
       type: 'unregistered',
       id: userId
-    }))
+    }
+    
+    // 如果请求中包含requestId，在响应中也包含
+    if (message.requestId) {
+      response.requestId = message.requestId
+    }
+    
+    ws.send(JSON.stringify(response))
+  } else {
+    // 如果找不到用户ID，返回错误
+    const errorResponse = {
+      type: 'error',
+      message: '未找到要注销的用户ID'
+    }
+    
+    if (message.requestId) {
+      errorResponse.requestId = message.requestId
+    }
+    
+    ws.send(JSON.stringify(errorResponse))
   }
 }
 
