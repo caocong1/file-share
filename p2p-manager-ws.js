@@ -19,6 +19,8 @@ class P2PManagerWS {
     this.onUsersListReceived = null
     this.reconnectTimer = null
     this.messageQueue = []
+    this.pendingRequests = new Map() // 存储待响应的请求 {requestId: {resolve, reject, timeout}}
+    this.requestIdCounter = 0 // 请求ID计数器
   }
 
   // 初始化
@@ -129,6 +131,13 @@ class P2PManagerWS {
 
   // 处理断开连接
   handleDisconnect() {
+    // 清理所有待响应的请求
+    for (const [requestId, request] of this.pendingRequests) {
+      clearTimeout(request.timeout)
+      request.reject(new Error('WebSocket连接已断开'))
+    }
+    this.pendingRequests.clear()
+    
     // 只有在有用户ID且不是主动重连的情况下才自动重连
     if (!this.reconnectTimer && this.myId && this.ws) {
       this.reconnectTimer = setTimeout(async () => {
@@ -172,10 +181,34 @@ class P2PManagerWS {
     }
   }
 
-  // 获取在线用户列表
+  // 生成唯一请求ID
+  generateRequestId() {
+    return `req_${Date.now()}_${++this.requestIdCounter}`
+  }
+
+  // 获取在线用户列表 - 返回Promise
   getOnlineUsers() {
-    this.sendSignalMessage({
-      type: 'get-users',
+    return new Promise((resolve, reject) => {
+      const requestId = this.generateRequestId()
+      
+      // 设置超时
+      const timeout = setTimeout(() => {
+        this.pendingRequests.delete(requestId)
+        reject(new Error('获取在线用户列表超时'))
+      }, 10000) // 10秒超时
+      
+      // 保存请求信息
+      this.pendingRequests.set(requestId, {
+        resolve,
+        reject,
+        timeout
+      })
+      
+      // 发送请求
+      this.sendSignalMessage({
+        type: 'get-users',
+        requestId: requestId
+      })
     })
   }
 
@@ -300,6 +333,16 @@ class P2PManagerWS {
 
       case 'users-list':
         console.log('收到在线用户列表:', message.users)
+        
+        // 如果有requestId，说明这是对getOnlineUsers请求的响应
+        if (message.requestId && this.pendingRequests.has(message.requestId)) {
+          const request = this.pendingRequests.get(message.requestId)
+          this.pendingRequests.delete(message.requestId)
+          clearTimeout(request.timeout)
+          request.resolve(message.users)
+        }
+        
+        // 同时保持原有的事件回调机制
         this.onUsersListReceived?.(message.users)
         break
 
@@ -492,6 +535,13 @@ class P2PManagerWS {
   cleanup() {
     // 注销用户
     this.unregisterUser()
+    
+    // 清理所有待响应的请求
+    for (const [requestId, request] of this.pendingRequests) {
+      clearTimeout(request.timeout)
+      request.reject(new Error('P2P管理器已清理'))
+    }
+    this.pendingRequests.clear()
     
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)

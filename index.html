@@ -917,7 +917,7 @@
                      // 等待服务器处理注销
            setTimeout(() => {
              // 重新连接WebSocket以确保服务器状态清理（跳过自动注册旧ID）
-             manager.reconnectWebSocket(true).then(() => {
+             manager.reconnectWebSocket(true).then(async () => {
                // 设置新ID
                manager.setMyId(myId)
                localStorage.setItem('myP2PId', myId)
@@ -941,10 +941,12 @@
                 }
               }, 3000)
               
-              // 等待一下再获取在线用户列表
-              setTimeout(() => {
-                manager.getOnlineUsers()
-              }, 800)
+              // 等待获取在线用户列表完成
+              try {
+                await manager.getOnlineUsers()
+              } catch (error) {
+                console.error('获取在线用户列表失败:', error)
+              }
             })
           }, 300) // 给服务器足够时间处理注销
           
@@ -959,8 +961,12 @@
           idDisplayCard.style.display = 'block'
 
           // 设置ID后立即获取在线用户列表
-          setTimeout(() => {
-            manager.getOnlineUsers()
+          setTimeout(async () => {
+            try {
+              await manager.getOnlineUsers()
+            } catch (error) {
+              console.error('获取在线用户列表失败:', error)
+            }
           }, 500)
         } catch (error) {
           console.error('设置ID失败:', error)
@@ -1397,11 +1403,7 @@
       }
 
       // 定期刷新在线用户列表
-      setInterval(() => {
-        if (manager.myId) {
-          manager.getOnlineUsers()
-        }
-      }, 5000)
+
 
       // 页面卸载时清理
       window.addEventListener('beforeunload', () => {

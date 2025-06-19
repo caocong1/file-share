@@ -170,7 +170,7 @@ function handleMessage(ws, message) {
       break
       
     case 'get-users':
-      handleGetUsers(ws)
+      handleGetUsers(ws, message)
       break
       
     case 'offer':
@@ -258,23 +258,35 @@ function handleUnregister(ws, message) {
 }
 
 // 处理获取在线用户列表
-function handleGetUsers(ws) {
+function handleGetUsers(ws, message = {}) {
   const userId = connections.get(ws)
   if (!userId) {
-    ws.send(JSON.stringify({
+    const errorResponse = {
       type: 'error',
       message: '请先注册用户 ID'
-    }))
+    }
+    // 如果有requestId，也包含在错误响应中
+    if (message.requestId) {
+      errorResponse.requestId = message.requestId
+    }
+    ws.send(JSON.stringify(errorResponse))
     return
   }
   
   // 返回除自己以外的在线用户
   const users = getOnlineUsersList().filter(id => id !== userId)
   
-  ws.send(JSON.stringify({
+  const response = {
     type: 'users-list',
     users: users
-  }))
+  }
+  
+  // 如果请求中包含requestId，在响应中也包含
+  if (message.requestId) {
+    response.requestId = message.requestId
+  }
+  
+  ws.send(JSON.stringify(response))
 }
 
 // 处理信令消息（offer, answer, ice-candidate）
