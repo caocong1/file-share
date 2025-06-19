@@ -964,13 +964,11 @@
           idDisplayCard.style.display = 'block'
 
           // 设置ID后立即获取在线用户列表
-          setTimeout(async () => {
-            try {
-              await manager.getOnlineUsers()
-            } catch (error) {
-              console.error('获取在线用户列表失败:', error)
-            }
-          }, 500)
+          try {
+            await manager.getOnlineUsers()
+          } catch (error) {
+            console.error('获取在线用户列表失败:', error)
+          }
         } catch (error) {
           console.error('设置ID失败:', error)
           alert('设置ID失败: ' + error.message)
