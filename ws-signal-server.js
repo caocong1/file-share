@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001
 const HOST = process.env.HOST || '0.0.0.0'
 
 // 存储在线用户
-const onlineUsers = new Map() // userId -> { ws, lastSeen }
+const onlineUsers = new Map() // userId -> { ws }
 const connections = new Map() // ws -> userId
 
 // 创建 HTTP 服务器
@@ -96,17 +96,27 @@ function broadcastToAll(message, excludeUserId = null) {
 
 // 清理用户连接
 function cleanupUser(userId) {
+  console.log(`[SERVER-DEBUG] 开始清理用户连接: ${userId}`)
   const userInfo = onlineUsers.get(userId)
   if (userInfo) {
+    console.log(`[SERVER-DEBUG] 找到用户信息:`, {
+      userId: userId,
+      wsReadyState: userInfo.ws.readyState
+    })
+    
     connections.delete(userInfo.ws)
     onlineUsers.delete(userId)
-    console.log(`用户 ${userId} 已离线，当前在线用户数: ${onlineUsers.size}`)
+    console.log(`[SERVER-DEBUG] 用户 ${userId} 已离线，当前在线用户数: ${onlineUsers.size}`)
     
     // 通知其他用户该用户离线
-    broadcastToAll({
+    const broadcastCount = broadcastToAll({
       type: 'user-offline',
       userId: userId
     }, userId)
+    
+    console.log(`[SERVER-DEBUG] 向 ${broadcastCount} 个用户广播离线消息`)
+  } else {
+    console.log(`[SERVER-DEBUG] 未找到用户信息: ${userId}`)
   }
 }
 
@@ -120,11 +130,8 @@ wss.on('connection', (ws, req) => {
   const clientIP = req.socket.remoteAddress
   console.log(`新的 WebSocket 连接来自: ${clientIP}`)
   
-  // 心跳检测
-  ws.isAlive = true
-  ws.on('pong', () => {
-    ws.isAlive = true
-  })
+  // 连接初始化
+  console.log(`[SERVER-DEBUG] WebSocket连接建立完成: ${clientIP}`)
   
   ws.on('message', (data) => {
     try {
@@ -140,16 +147,30 @@ wss.on('connection', (ws, req) => {
   })
   
   ws.on('close', (code, reason) => {
-    console.log(`WebSocket 连接关闭: ${code} ${reason}`)
     const userId = connections.get(ws)
+    console.log(`[SERVER-DEBUG] WebSocket连接关闭:`, {
+      code: code,
+      reason: reason?.toString(),
+      userId: userId,
+      clientIP: clientIP,
+      timestamp: new Date().toISOString()
+    })
+    
     if (userId) {
       cleanupUser(userId)
     }
   })
   
   ws.on('error', (error) => {
-    console.error('WebSocket 错误:', error.message)
     const userId = connections.get(ws)
+    console.error(`[SERVER-DEBUG] WebSocket错误:`, {
+      error: error.message,
+      userId: userId,
+      clientIP: clientIP,
+      wsReadyState: ws.readyState,
+      timestamp: new Date().toISOString()
+    })
+    
     if (userId) {
       cleanupUser(userId)
     }
@@ -158,7 +179,15 @@ wss.on('connection', (ws, req) => {
 
 // 处理收到的消息
 function handleMessage(ws, message) {
-  console.log('收到消息:', message.type, message.id || message.from || '')
+  const userId = connections.get(ws)
+  
+  console.log(`[SERVER-DEBUG] 收到消息:`, {
+    type: message.type,
+    from: message.id || message.from || userId || 'unknown',
+    to: message.to || '',
+    wsReadyState: ws.readyState,
+    timestamp: new Date().toISOString()
+  })
   
   switch (message.type) {
     case 'register':
@@ -223,8 +252,7 @@ function handleRegister(ws, message) {
   
   // 注册新用户
   onlineUsers.set(userId, {
-    ws: ws,
-    lastSeen: Date.now()
+    ws: ws
   })
   connections.set(ws, userId)
   
@@ -355,34 +383,7 @@ function handleSignaling(ws, message) {
   }
 }
 
-// 心跳检测 - 每30秒检查一次
-setInterval(() => {
-  const now = Date.now()
-  const timeout = 60000 // 60秒超时
-  
-  wss.clients.forEach((ws) => {
-    if (!ws.isAlive) {
-      console.log('检测到僵尸连接，终止连接')
-      const userId = connections.get(ws)
-      if (userId) {
-        cleanupUser(userId)
-      }
-      ws.terminate()
-      return
-    }
-    
-    ws.isAlive = false
-    ws.ping()
-  })
-  
-  // 清理长时间无活动的用户
-  for (const [userId, userInfo] of onlineUsers) {
-    if (now - userInfo.lastSeen > timeout) {
-      console.log(`用户 ${userId} 长时间无活动，清理连接`)
-      cleanupUser(userId)
-    }
-  }
-}, 30000)
+
 
 // 定期统计在线用户
 setInterval(() => {

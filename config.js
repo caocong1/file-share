@@ -29,6 +29,10 @@ export const config = {
 
     // 在线状态广播间隔（毫秒）
     presenceInterval: 30000,
+
+    // 数据完整性验证
+    // 启用每个chunk的CRC32校验（会增加4字节开销和计算时间）
+    enableHashVerification: false, // 默认关闭，适合可靠网络环境
   },
 }
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="安全、快速、简单的局域网文件传输工具" />
-    <title>🚀 ID 文件传输</title>
+    <title>局域网文件传输</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>"/>
     <style>
       :root {
@@ -1303,6 +1303,16 @@
 
       // 监听文件传输失败
       manager.onFileFailed = (failedInfo, fromId) => {
+        console.log('[UI-DEBUG] 文件传输失败:', {
+          fileId: failedInfo.id,
+          fileName: failedInfo.name,
+          reason: failedInfo.reason,
+          progress: failedInfo.progress,
+          fromId: fromId,
+          hasFileInfo: receivingFiles.has(failedInfo.id),
+          timestamp: new Date().toISOString()
+        })
+        
         const fileInfo = receivingFiles.get(failedInfo.id)
         if (fileInfo) {
           receivingFiles.delete(failedInfo.id)
@@ -1319,6 +1329,13 @@
 
       // 监听新连接
       manager.onPeerConnected = (peerId) => {
+        console.log('[UI-DEBUG] P2P连接建立成功:', {
+          peerId: peerId,
+          alreadyInDevices: devices.has(peerId),
+          currentDevices: Array.from(devices.keys()),
+          timestamp: new Date().toISOString()
+        })
+        
         const device = { id: peerId, name: peerId }
         if (!devices.has(peerId)) {
           devices.set(peerId, device)
@@ -1329,10 +1346,16 @@
 
       // 监听在线用户列表
       manager.onUsersListReceived = (users) => {
-        console.log('收到在线用户列表:', users)
+        console.log('[UI-DEBUG] 收到在线用户列表:', {
+          receivedUsers: users,
+          previousOnlineUsers: Array.from(onlineUsers),
+          timestamp: new Date().toISOString()
+        })
+        
         onlineUsers.clear()
         users.forEach(userId => onlineUsers.add(userId))
-        console.log('更新后的在线用户:', Array.from(onlineUsers))
+        
+        console.log('[UI-DEBUG] 更新后的在线用户:', Array.from(onlineUsers))
         updateOnlineUsersList()
       }
 
@@ -1346,19 +1369,30 @@
 
       // 监听用户离线
       manager.onUserOffline = (userId) => {
-        console.log(`用户 ${userId} 已离线，从在线列表中移除`)
+        console.log(`[UI-DEBUG] 收到用户离线事件:`, {
+          userId: userId,
+          wasOnline: onlineUsers.has(userId),
+          wasConnected: devices.has(userId),
+          currentOnlineUsers: Array.from(onlineUsers),
+          currentConnectedDevices: Array.from(devices.keys()),
+          timestamp: new Date().toISOString()
+        })
+        
         onlineUsers.delete(userId)
         
         // 如果该用户已连接，从设备列表中移除
         if (devices.has(userId)) {
-          console.log(`用户 ${userId} 已连接，从设备列表中移除`)
+          console.log(`[UI-DEBUG] 用户 ${userId} 已连接，从设备列表中移除`)
           devices.delete(userId)
           // 更新已连接设备列表
           updateDeviceList()
         }
         
         updateOnlineUsersList()
-        console.log('当前在线用户:', Array.from(onlineUsers))
+        console.log('[UI-DEBUG] 用户离线处理完成，当前状态:', {
+          onlineUsers: Array.from(onlineUsers),
+          connectedDevices: Array.from(devices.keys())
+        })
       }
 
       // 更新已连接设备列表
