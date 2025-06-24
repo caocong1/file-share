@@ -1,100 +1,88 @@
 module.exports = {
-  apps: [
-    {
-      name: 'file-share-web',
-      script: 'web-server.js',
-      instances: 1,
-      exec_mode: 'fork',
-      restart_delay: 1000,
-      max_restarts: 10,
-      min_uptime: '10s',
-      max_memory_restart: '200M',
-      env: {
-        NODE_ENV: 'production',
-        WEB_PORT: 3000,
-        HOST: '0.0.0.0'
-      },
-      env_development: {
-        NODE_ENV: 'development',
-        WEB_PORT: 3000,
-        HOST: '0.0.0.0',
-        watch: true,
-        ignore_watch: [
-          'node_modules',
-          'logs',
-          '*.log'
-        ]
-      },
-      error_file: './logs/web-error.log',
-      out_file: './logs/web-out.log',
-      log_file: './logs/web-combined.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      merge_logs: true,
-      autorestart: true,
-      watch: false,
-      ignore_watch: [
-        'node_modules',
-        'logs'
-      ]
-    },
-    {
-      name: 'file-share-signal',
-      script: 'ws-signal-server.js',
-      instances: 1,
-      exec_mode: 'fork',
-      restart_delay: 1000,
-      max_restarts: 10,
-      min_uptime: '10s',
-      max_memory_restart: '150M',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 3001,
-        HOST: '0.0.0.0'
-      },
-      env_development: {
-        NODE_ENV: 'development',
-        PORT: 3001,
-        HOST: '0.0.0.0',
-        watch: true,
-        ignore_watch: [
-          'node_modules',
-          'logs',
-          '*.log'
-        ]
-      },
-      error_file: './logs/signal-error.log',
-      out_file: './logs/signal-out.log',
-      log_file: './logs/signal-combined.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      merge_logs: true,
-      autorestart: true,
-      watch: false,
-      ignore_watch: [
-        'node_modules',
-        'logs'
-      ]
-    }
-  ],
+	apps: [
+		{
+			name: "file-share-web",
+			script: "web-server.js",
+			instances: 1,
+			exec_mode: "fork",
+			restart_delay: 1000,
+			max_restarts: 10,
+			min_uptime: "10s",
+			max_memory_restart: "200M",
+			env: {
+				NODE_ENV: "production",
+				WEB_PORT: 3000,
+				HOST: "0.0.0.0",
+			},
+			env_development: {
+				NODE_ENV: "development",
+				WEB_PORT: 3000,
+				HOST: "0.0.0.0",
+				watch: true,
+				ignore_watch: ["node_modules", "logs", "*.log"],
+			},
+			error_file: "./logs/web-error.log",
+			out_file: "./logs/web-out.log",
+			log_file: "./logs/web-combined.log",
+			log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+			merge_logs: true,
+			autorestart: true,
+			watch: false,
+			ignore_watch: ["node_modules", "logs"],
+		},
+		{
+			name: "file-share-signal",
+			script: "ws-signal-server.js",
+			instances: 1,
+			exec_mode: "fork",
+			restart_delay: 1000,
+			max_restarts: 10,
+			min_uptime: "10s",
+			max_memory_restart: "150M",
+			env: {
+				NODE_ENV: "production",
+				PORT: 3001,
+				HOST: "0.0.0.0",
+			},
+			env_development: {
+				NODE_ENV: "development",
+				PORT: 3001,
+				HOST: "0.0.0.0",
+				watch: true,
+				ignore_watch: ["node_modules", "logs", "*.log"],
+			},
+			error_file: "./logs/signal-error.log",
+			out_file: "./logs/signal-out.log",
+			log_file: "./logs/signal-combined.log",
+			log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+			merge_logs: true,
+			autorestart: true,
+			watch: false,
+			ignore_watch: ["node_modules", "logs"],
+		},
+	],
 
-  // 部署配置（可选）
-  deploy: {
-    production: {
-      user: 'deploy',
-      host: ['your-server.com'],
-      ref: 'origin/main',
-      repo: 'your-repo-url',
-      path: '/var/www/file-share',
-      'pre-deploy-local': '',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': ''
-    },
-    development: {
-      user: 'deploy',
-      host: ['dev-server.com'],
-      ref: 'origin/develop',
-      repo: 'your-repo-url',
-      path: '/var/www/file-share-dev',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env development'
-    }
-  }
-} 
+	// 部署配置（可选）
+	deploy: {
+		production: {
+			user: "deploy",
+			host: ["your-server.com"],
+			ref: "origin/main",
+			repo: "your-repo-url",
+			path: "/var/www/file-share",
+			"pre-deploy-local": "",
+			"post-deploy":
+				"npm install && pm2 reload ecosystem.config.js --env production",
+			"pre-setup": "",
+		},
+		development: {
+			user: "deploy",
+			host: ["dev-server.com"],
+			ref: "origin/develop",
+			repo: "your-repo-url",
+			path: "/var/www/file-share-dev",
+			"post-deploy":
+				"npm install && pm2 reload ecosystem.config.js --env development",
+		},
+	},
+};

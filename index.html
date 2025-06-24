@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="安全、快速、简单的局域网文件传输工具" />
-    <title>局域网文件传输</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>"/>
-    <style>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="安全、快速、简单的局域网文件传输工具" />
+		<title>局域网文件传输</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>"
+		>
+		<style>
       :root {
         --primary: #3b82f6;
         --primary-hover: #2563eb;
@@ -421,6 +424,58 @@
         color: var(--text-secondary);
       }
 
+      .drop-zone .paste-hint {
+        color: var(--text-light);
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+      }
+
+      .drop-zone .paste-hint kbd {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid #adb5bd;
+        border-bottom: 2px solid #6c757d;
+        border-radius: 4px;
+        padding: 0.2rem 0.4rem;
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', monospace;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #495057;
+        margin: 0 0.1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        min-width: 1.5rem;
+        text-align: center;
+        position: relative;
+        top: -1px;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .drop-zone .paste-hint kbd:hover {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
+        transform: translateY(-0.5px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      /* 深色模式下的 kbd 样式 */
+      @media (prefers-color-scheme: dark) {
+        .drop-zone .paste-hint kbd {
+          background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+          border: 1px solid #6c757d;
+          border-bottom: 2px solid #adb5bd;
+          color: #f8f9fa;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .drop-zone .paste-hint kbd:hover {
+          background: linear-gradient(135deg, #5a6268 0%, #3d4449 100%);
+          transform: translateY(-0.5px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+      }
+
       .file-list {
         max-height: 400px;
         overflow-y: auto;
@@ -709,94 +764,99 @@
         }
       }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>🚀 局域网文件传输</h1>
-        <p>安全、快速、简单的点对点文件传输工具</p>
-      </div>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>🚀 局域网文件传输</h1>
+				<p>安全、快速、简单的点对点文件传输工具</p>
+			</div>
 
-      <div class="main-grid">
-        <div class="panel">
-          <h2>🔗 连接设置</h2>
+			<div class="main-grid">
+				<div class="panel">
+					<h2>🔗 连接设置</h2>
 
-          <div class="info-box">
-            <strong>💡 使用说明：</strong>
-            <ol>
-              <li>设置您的 ID（ID 只能包含字母、数字、下划线和横线）</li>
-              <li>在"在线用户"列表中点击连接按钮</li>
-              <li>连接成功后即可传输文件</li>
-            </ol>
-          </div>
+					<div class="info-box">
+						<strong>💡 使用说明：</strong>
+						<ol>
+							<li>设置您的 ID（ID 只能包含字母、数字、下划线和横线）</li>
+							<li>在"在线用户"列表中点击连接按钮</li>
+							<li>连接成功后即可传输文件</li>
+						</ol>
+					</div>
 
-          <!-- ID 管理区域 -->
-          <div class="id-section">
-            <div id="idSetupCard" class="id-card">
-              <!-- <div class="id-card-header">
+					<!-- ID 管理区域 -->
+					<div class="id-section">
+						<div id="idSetupCard" class="id-card">
+							<!-- <div class="id-card-header">
                 <span class="id-icon">👤</span>
                 <span>设置您的身份ID</span>
               </div> -->
-              <div class="id-input-wrapper">
-                <input
-                  type="text"
-                  id="myIdInput"
-                  placeholder="输入您的 ID (如: alice)"
-                  maxlength="20"
-                  class="id-input"
-                />
-                <button id="setIdBtn" class="id-btn">设置</button>
-              </div>
-            </div>
+							<div class="id-input-wrapper">
+								<input
+									type="text"
+									id="myIdInput"
+									placeholder="输入您的 ID (如: alice)"
+									maxlength="20"
+									class="id-input"
+								>
+								<button id="setIdBtn" class="id-btn">设置</button>
+							</div>
+						</div>
 
-            <div id="idDisplayCard" class="id-card active-id" style="display: none">
-              <!-- <div class="id-card-header">
+						<div
+							id="idDisplayCard"
+							class="id-card active-id"
+							style="display: none"
+						>
+							<!-- <div class="id-card-header">
                 <span class="id-icon">✅</span>
                 <span>当前身份</span>
               </div> -->
-              <div class="id-display-wrapper">
-                <div class="current-id" id="myIdText"></div>
-                <button id="changeIdBtn" class="id-btn secondary">修改</button>
-              </div>
-            </div>
-          </div>
+							<div class="id-display-wrapper">
+								<div class="current-id" id="myIdText"></div>
+								<button id="changeIdBtn" class="id-btn secondary">修改</button>
+							</div>
+						</div>
+					</div>
 
-          <!-- 在线用户列表 -->
-          <h3>👥 在线用户</h3>
-          <div class="list-container">
-            <div id="onlineUsersList">
-              <div class="empty-state">正在获取在线用户...</div>
-            </div>
-          </div>
+					<!-- 在线用户列表 -->
+					<h3>👥 在线用户</h3>
+					<div class="list-container">
+						<div id="onlineUsersList">
+							<div class="empty-state">正在获取在线用户...</div>
+						</div>
+					</div>
 
-          <!-- 已连接的用户列表 -->
-          <h3>✅ 已连接的用户</h3>
-          <div class="list-container">
-            <div id="deviceList">
-              <div class="empty-state">尚未连接任何用户</div>
-            </div>
-          </div>
-        </div>
+					<!-- 已连接的用户列表 -->
+					<h3>✅ 已连接的用户</h3>
+					<div class="list-container">
+						<div id="deviceList">
+							<div class="empty-state">尚未连接任何用户</div>
+						</div>
+					</div>
+				</div>
 
-        <div class="panel">
-          <h2>📁 文件传输</h2>
+				<div class="panel">
+					<h2>📁 文件传输</h2>
 
-          <div id="dropZone" class="drop-zone">
-            <div class="drop-zone-icon">📤</div>
-            <p class="primary-text">拖拽文件到这里</p>
-            <p class="secondary-text">或点击选择文件</p>
-            <input type="file" id="fileInput" multiple style="display: none" />
-          </div>
+					<div id="dropZone" class="drop-zone">
+						<div class="drop-zone-icon">📤</div>
+						<p class="primary-text">拖拽文件到这里</p>
+						<p class="secondary-text">或点击选择文件</p>
+						<p class="paste-hint" id="pasteHint">也可以按 Ctrl+V 粘贴文件</p>
+						<input type="file" id="fileInput" multiple style="display: none" />
+					</div>
 
-          <h3>📋 传输列表</h3>
-          <div class="file-list" id="fileList">
-            <div class="empty-state">暂无文件传输</div>
-          </div>
-        </div>
-      </div>
-    </div>
+					<h3>📋 传输列表</h3>
+					<div class="file-list" id="fileList">
+						<div class="empty-state">暂无文件传输</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <script type="module">
+		<script type="module">
       import { P2PManagerWS } from './p2p-manager-ws.js'
       import { config, updateConfigFromURL } from './config.js'
 
@@ -820,6 +880,45 @@
       const dropZone = document.getElementById('dropZone')
       const fileInput = document.getElementById('fileInput')
       const fileList = document.getElementById('fileList')
+
+      // 系统检测工具函数
+      function detectOS() {
+        const userAgent = navigator.userAgent.toLowerCase()
+        return {
+          isMac: userAgent.includes('mac') || userAgent.includes('darwin'),
+          isIOS: /ipad|iphone|ipod/.test(userAgent),
+          isWindows: userAgent.includes('win'),
+          isLinux: userAgent.includes('linux') && !userAgent.includes('android'),
+          isAndroid: userAgent.includes('android')
+        }
+      }
+
+      // 检测操作系统并更新快捷键提示
+      function updatePasteHint() {
+        const pasteHint = document.getElementById('pasteHint')
+        if (!pasteHint) return
+        
+        const os = detectOS()
+        
+        let description = '粘贴文件'
+        
+        if (os.isMac && !os.isIOS) {
+          pasteHint.innerHTML = `也可以按 <kbd>⌘</kbd>+<kbd>V</kbd> ${description}`
+        } else if (os.isIOS) {
+          // iOS设备不支持文件粘贴，提示不同内容
+          pasteHint.innerHTML = '或从 <strong>照片</strong> 应用长按粘贴图片'
+          pasteHint.style.opacity = '0.7'
+          pasteHint.style.fontSize = '0.75rem'
+        } else if (os.isAndroid) {
+          // Android设备的粘贴功能有限
+          pasteHint.innerHTML = '或使用 <strong>分享</strong> 功能传输文件'
+          pasteHint.style.opacity = '0.7'
+          pasteHint.style.fontSize = '0.75rem'
+        } else {
+          // Windows/Linux
+          pasteHint.innerHTML = `也可以按 <kbd>Ctrl</kbd>+<kbd>V</kbd> ${description}`
+        }
+      }
 
       // 初始化
       async function init() {
@@ -852,6 +951,19 @@
           // document.querySelector('.header').appendChild(info)
           console.log('已连接到信令服务器', config.signalServer)
         }
+
+        // 更新快捷键提示
+        updatePasteHint()
+        
+        // 输出系统检测信息（用于调试）
+        const os = detectOS()
+        console.log('🔍 系统检测结果:', {
+          系统类型: os.isMac ? 'macOS' : os.isWindows ? 'Windows' : os.isLinux ? 'Linux' : os.isAndroid ? 'Android' : os.isIOS ? 'iOS' : '未知',
+          快捷键: os.isMac && !os.isIOS ? '⌘+V' : 'Ctrl+V',
+          HTML结构: os.isMac && !os.isIOS ? '<kbd>⌘</kbd>+<kbd>V</kbd>' : '<kbd>Ctrl</kbd>+<kbd>V</kbd>',
+          支持粘贴: !(os.isIOS || os.isAndroid),
+          用户代理: navigator.userAgent
+        })
 
         // 检查是否已有保存的 ID
         const savedId = localStorage.getItem('myP2PId')
@@ -1083,12 +1195,290 @@
       dropZone.ondrop = (e) => {
         e.preventDefault()
         dropZone.classList.remove('active')
+        
+        // 检查是否支持文件夹拖拽
+        const items = e.dataTransfer.items
+        if (items) {
+          console.log('[拖拽调试] DataTransferItems数量:', items.length)
+          
+          // 检查是否有文件夹
+          let hasFolder = false
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i]
+            if (item.kind === 'file') {
+              const entry = item.webkitGetAsEntry?.() || item.getAsEntry?.()
+              if (entry && entry.isDirectory) {
+                hasFolder = true
+                console.log('[拖拽调试] 检测到文件夹:', entry.name)
+              }
+            }
+          }
+          
+          if (hasFolder) {
+            alert('检测到文件夹！\n\n由于浏览器安全限制，暂时无法处理文件夹传输。\n请选择文件夹内的具体文件进行传输。')
+            return
+          }
+        }
+        
         handleFiles(e.dataTransfer.files)
       }
 
       fileInput.onchange = (e) => {
         handleFiles(e.target.files)
       }
+
+      // 检测是否为文件夹的辅助函数
+      function isLikelyFolder(file) {
+        const os = detectOS()
+        
+        // 检测文件夹的特征
+        const hasNoExtension = !file.name.includes('.')
+        const hasZeroSize = file.size === 0
+        const hasNoType = !file.type || file.type === ''
+        const hasDirectoryPath = file.name.endsWith('/') || file.name.endsWith('\\')
+        const hasDirectoryType = file.type === 'application/x-directory'
+        
+        // Mac系统特殊处理：文件夹通常有小的非零大小（元数据大小）
+        const isMacSmallSize = os.isMac && file.size > 0 && file.size < 4096 // 通常小于4KB
+        
+        // Mac文件夹的典型特征：
+        // 1. 大小通常是 68, 96, 102, 204, 238, 272, 306, 340, 374, 408等（Finder信息大小）
+        // 2. 常见的文件夹大小范围
+        const isMacTypicalFolderSize = os.isMac && file.size > 0 && (
+          file.size === 68 || file.size === 96 || file.size === 102 || 
+          file.size === 204 || file.size === 238 || file.size === 272 || 
+          file.size === 306 || file.size === 340 || file.size === 374 || 
+          file.size === 408 || (file.size > 60 && file.size < 500 && file.size % 34 === 0)
+        )
+        
+        // 常见的无扩展名文件，不应被误判为文件夹
+        const commonNoExtFiles = [
+          'README', 'LICENSE', 'CHANGELOG', 'Dockerfile', 'Makefile', 
+          '.gitignore', '.env', '.eslintrc', '.prettierrc', 'COPYING',
+          'AUTHORS', 'CONTRIBUTORS', 'INSTALL', 'NEWS', 'TODO'
+        ]
+        const isCommonFile = commonNoExtFiles.some(name => 
+          file.name.toUpperCase() === name.toUpperCase() || 
+          (file.name.startsWith('.') && file.name.length > 1)
+        )
+        
+        // 检查是否为可执行文件或脚本（这些通常没有扩展名但是文件）
+        const isLikelyExecutable = file.size > 4096 && hasNoExtension && hasNoType
+        
+        // Mac系统的最终文件夹判断
+        const isMacFolder = os.isMac && hasNoExtension && hasNoType && (isMacSmallSize || isMacTypicalFolderSize)
+        
+        // 最终的文件夹判断
+        const isFolderResult = !isCommonFile && !isLikelyExecutable && (
+          hasDirectoryType || 
+          hasDirectoryPath ||
+          (hasNoExtension && hasZeroSize && hasNoType) ||
+          isMacFolder
+        )
+        
+        console.log(`[文件夹检测] ${file.name}:`, {
+          基本信息: {
+            hasNoExtension,
+            hasZeroSize,
+            hasNoType,
+            fileSize: file.size,
+            系统: os.isMac ? 'Mac' : 'Other'
+          },
+          特征检测: {
+            hasDirectoryPath,
+            hasDirectoryType,
+            isMacSmallSize,
+            isMacTypicalFolderSize,
+            isMacFolder
+          },
+          排除条件: {
+            isCommonFile,
+            isLikelyExecutable
+          },
+          最终判断: isFolderResult
+        })
+        
+        // 如果检测为Mac文件夹，给出额外提示
+        if (os.isMac && isMacFolder) {
+          console.log(`[Mac文件夹] 检测到Mac系统文件夹: ${file.name} (${file.size}字节)`)
+        }
+        
+        return isFolderResult
+      }
+
+      // 显示文件夹粘贴警告
+      function showFolderPasteWarning(folderNames) {
+        const notification = document.createElement('div')
+        notification.className = 'notification error'
+        notification.innerHTML = `
+          <strong>⚠️ 不支持粘贴文件夹</strong><br>
+          检测到文件夹: ${folderNames.join(', ')}<br>
+          <small>💡 建议：请直接拖拽文件夹到传输区域，或选择文件夹内的文件</small>
+        `
+        document.body.appendChild(notification)
+        
+        setTimeout(() => {
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification)
+          }
+        }, 5000) // 显示5秒
+      }
+
+      // 粘贴文件支持
+      document.addEventListener('paste', (e) => {
+        e.preventDefault()
+        
+        const clipboardData = e.clipboardData || window.clipboardData
+        if (!clipboardData) return
+        
+        const items = clipboardData.items
+        const files = []
+        const folders = []
+        
+        console.log('[粘贴调试] 剪贴板项目数量:', items.length)
+        
+        // 遍历剪贴板项目
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+          
+          console.log(`[粘贴调试] 项目${i}:`, {
+            kind: item.kind,
+            type: item.type,
+            toString: item.toString?.()
+          })
+          
+          // 检查是否是文件
+          if (item.kind === 'file') {
+            const file = item.getAsFile()
+            if (file) {
+              console.log(`[粘贴调试] 获取到文件:`, {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified,
+                isLikelyFolder: isLikelyFolder(file)
+              })
+              
+              // 检测是否为文件夹
+              if (isLikelyFolder(file)) {
+                folders.push(file.name)
+                console.log(`[粘贴调试] 检测到疑似文件夹: ${file.name}`)
+              } else {
+                files.push(file)
+              }
+            }
+          }
+        }
+        
+        // 处理检测到的文件夹
+        if (folders.length > 0) {
+          console.log(`[粘贴调试] 发现 ${folders.length} 个文件夹:`, folders)
+          showFolderPasteWarning(folders)
+          
+          // 如果同时有文件，询问用户是否继续处理文件
+          if (files.length > 0) {
+            const proceed = confirm(`检测到 ${folders.length} 个文件夹和 ${files.length} 个文件。\n\n文件夹无法通过粘贴传输，是否继续传输其中的文件？`)
+            if (!proceed) {
+              return
+            }
+          } else {
+            // 只有文件夹，没有文件
+            return
+          }
+        }
+        
+        if (files.length > 0) {
+          console.log(`[粘贴调试] 准备处理 ${files.length} 个文件:`, files.map(f => ({
+            name: f.name,
+            size: f.size,
+            type: f.type
+          })))
+          
+          // 显示粘贴提示动画
+          dropZone.classList.add('active')
+          setTimeout(() => {
+            dropZone.classList.remove('active')
+          }, 200)
+          
+          handleFiles(files)
+        } else {
+          // 检查是否有其他文件格式（如Windows复制的文件）
+          const filesList = clipboardData.files
+          if (filesList && filesList.length > 0) {
+            console.log(`[粘贴调试] 从clipboardData.files检测到文件:`, Array.from(filesList).map(f => ({
+              name: f.name,
+              size: f.size,
+              type: f.type,
+              isLikelyFolder: isLikelyFolder(f)
+            })))
+            
+            // 对clipboardData.files也进行文件夹检测
+            const validFiles = []
+            const detectedFolders = []
+            
+            for (const file of filesList) {
+              if (isLikelyFolder(file)) {
+                detectedFolders.push(file.name)
+              } else {
+                validFiles.push(file)
+              }
+            }
+            
+            if (detectedFolders.length > 0) {
+              showFolderPasteWarning(detectedFolders)
+            }
+            
+            if (validFiles.length > 0) {
+              handleFiles(validFiles)
+            }
+          } else {
+            console.log('[粘贴调试] 剪贴板中没有检测到任何文件')
+          }
+        }
+      })
+
+      // 显示粘贴键盘快捷键提示
+      document.addEventListener('keydown', (e) => {
+        const os = detectOS()
+        
+        // 检测正确的快捷键组合
+        const isCorrectShortcut = os.isMac && !os.isIOS ? 
+          (e.metaKey && e.key === 'v') : // Mac: Cmd+V
+          (e.ctrlKey && e.key === 'v')   // Windows/Linux: Ctrl+V
+        
+        if (isCorrectShortcut) {
+          // 高亮显示粘贴提示
+          const pasteHint = document.querySelector('.paste-hint')
+          const kbdElements = pasteHint?.querySelectorAll('kbd')
+          
+          if (pasteHint && kbdElements && kbdElements.length > 0) {
+            // 高亮整个提示文字
+            pasteHint.style.color = 'var(--primary)'
+            pasteHint.style.opacity = '1'
+            pasteHint.style.fontWeight = '600'
+            
+            // 所有键盘按键按下效果
+            kbdElements.forEach(kbd => {
+              kbd.style.transform = 'translateY(1px)'
+              kbd.style.boxShadow = '0 0 4px rgba(66, 165, 245, 0.4)'
+              kbd.style.borderBottomWidth = '1px'
+            })
+            
+            setTimeout(() => {
+              pasteHint.style.color = ''
+              pasteHint.style.opacity = ''
+              pasteHint.style.fontWeight = ''
+              
+              // 恢复所有键盘按键样式
+              kbdElements.forEach(kbd => {
+                kbd.style.transform = ''
+                kbd.style.boxShadow = ''
+                kbd.style.borderBottomWidth = ''
+              })
+            }, 1000)
+          }
+        }
+      })
 
       async function handleFiles(files) {
         if (!selectedDevice) {
@@ -1438,5 +1828,5 @@
       // 启动
       init()
     </script>
-  </body>
+	</body>
 </html>
