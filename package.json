@@ -5,23 +5,17 @@
 	"description": "P2P 文件传输应用 - 支持局域网内直接传输文件",
 	"main": "index.js",
 	"scripts": {
-		"start": "concurrently \"npm run web\" \"npm run signal\"",
+		"start": "pnpm exec pm2 start ecosystem.config.cjs --env production",
 		"web": "node web-server.js",
 		"signal": "node ws-signal-server.js",
-		"dev": "concurrently --names \"WEB,WS\" --prefix-colors \"cyan,yellow\" \"npm run web\" \"npm run signal\"",
-		"pm2:start": "pm2 start ecosystem.config.cjs",
-		"pm2:stop": "pm2 stop ecosystem.config.cjs",
-		"pm2:restart": "pm2 restart ecosystem.config.cjs",
-		"pm2:reload": "pm2 reload ecosystem.config.cjs",
-		"pm2:delete": "pm2 delete ecosystem.config.cjs",
-		"pm2:logs": "pm2 logs",
-		"pm2:status": "pm2 status",
-		"pm2:monit": "pm2 monit",
-		"pm2:dev": "pm2-dev start ecosystem.config.cjs",
-		"prod": "npm run pm2:start",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"format": "biome format --write",
-		"lint": "biome lint --write",
+		"dev": "pnpm exec pm2-dev start ecosystem.config.cjs --env development",
+		"pm2:stop": "pnpm exec pm2 stop ecosystem.config.cjs",
+		"pm2:restart": "pnpm exec pm2 restart ecosystem.config.cjs",
+		"pm2:reload": "pnpm exec pm2 reload ecosystem.config.cjs",
+		"pm2:delete": "pnpm exec pm2 delete ecosystem.config.cjs",
+		"pm2:logs": "pnpm exec pm2 logs",
+		"pm2:status": "pnpm exec pm2 status",
+		"pm2:monit": "pnpm exec pm2 monit",
 		"check": "biome check --write"
 	},
 	"keywords": [
@@ -31,15 +25,14 @@
 		"websocket",
 		"file-sharing"
 	],
-	"author": "",
+	"author": "caocong",
 	"license": "ISC",
-	"packageManager": "pnpm@10.11.0",
+	"packageManager": "pnpm@10.12.2",
 	"dependencies": {
 		"ws": "^8.18.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0",
-		"concurrently": "^8.2.2",
 		"pm2": "^5.3.0"
 	}
 }
