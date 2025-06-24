@@ -10,9 +10,15 @@ module.exports = {
 			min_uptime: "10s",
 			max_memory_restart: "200M",
 			env: {
+				NODE_ENV: "development",
+				WEB_PORT: 3000,
+				HOST: "0.0.0.0",
+			},
+			env_production: {
 				NODE_ENV: "production",
 				WEB_PORT: 3000,
 				HOST: "0.0.0.0",
+				watch: false,
 			},
 			env_development: {
 				NODE_ENV: "development",
@@ -40,9 +46,15 @@ module.exports = {
 			min_uptime: "10s",
 			max_memory_restart: "150M",
 			env: {
+				NODE_ENV: "development",
+				PORT: 3001,
+				HOST: "0.0.0.0",
+			},
+			env_production: {
 				NODE_ENV: "production",
 				PORT: 3001,
 				HOST: "0.0.0.0",
+				watch: false,
 			},
 			env_development: {
 				NODE_ENV: "development",
